@@ -7,12 +7,15 @@
 #include "struct.h"
 #include "tools.h"
 
+// 2个消息队列
 static int msgid_ctos;
 static int msgid_stoc;
+// 存储子进程ID
 static pid_t sub_pid[9];
 
 void sigint(int sig)
 {
+    // 对msqid标识的消息队列执行cmd操作
 	msgctl(msgid_ctos,IPC_RMID,NULL);
 	msgctl(msgid_stoc,IPC_RMID,NULL);
 	
@@ -24,15 +27,20 @@ void sigint(int sig)
 }
 
 int main()
-{
+{ 
+    // 处理信号 SIGINT(2) 终端中断符信号 
 	signal(SIGINT,sigint);
 
 	msgctl(msgid_ctos,IPC_RMID,NULL);
 	msgctl(msgid_stoc,IPC_RMID,NULL);
 
+    // IPC_CREAT 创建消息队列,IPC_EXCL 如果存在则创建失败
+    // IPC键值，由ftok函数自动生成
 	msgid_ctos = msgget(ftok(".",100),IPC_CREAT|IPC_EXCL|0644);
 	msgid_stoc = msgget(ftok(".",200),IPC_CREAT|IPC_EXCL|0644);
 	
+    // login open save take transf select change destory unlock
+    // 创建一个新的进程
 	sub_pid[0] = vfork();
 	if(0 == sub_pid[0])
 	{
@@ -69,8 +77,6 @@ int main()
 	{
 		execl("select","select",NULL);
 	}
-
-//login open save take transf select change destory unlock
 
 	sub_pid[6] = vfork();
 	if(0 == sub_pid[6])
